@@ -10,15 +10,20 @@ import 'package:latlong2/latlong.dart';
 
 class AuthNotifier extends ChangeNotifier {
   bool _isLoggedIn = false;
-  bool get isLoggedIn => _isLoggedIn;
+  String _email = '';
 
-  void login() {
+  bool get isLoggedIn => _isLoggedIn;
+  String get email => _email;
+
+  void login(String email) {
     _isLoggedIn = true;
+    _email = email;
     notifyListeners();
   }
 
   void logout() {
     _isLoggedIn = false;
+    _email = '';
     notifyListeners();
   }
 }
@@ -54,7 +59,7 @@ final _router = GoRouter(
         ),
         GoRoute(
           path: '/profile',
-          builder: (_, __) => const _PlaceholderView(label: 'Profile'),
+          builder: (_, __) => const ProfileView(),
         ),
       ],
     ),
@@ -588,6 +593,292 @@ class _CategoryRow extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
+// Profile screen
+// ---------------------------------------------------------------------------
+
+class ProfileView extends ConsumerWidget {
+  const ProfileView({super.key});
+
+  String _initials(String email) {
+    if (email.isEmpty) return '?';
+    return email[0].toUpperCase();
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final email = ref.watch(authProvider).email;
+
+    return Container(
+      color: const Color(0xFFF1F8F4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header
+          Container(
+            color: const Color(0xFF1B4332),
+            padding: const EdgeInsets.fromLTRB(32, 28, 32, 24),
+            child: const Row(
+              children: [
+                Icon(Icons.person, color: Colors.white, size: 28),
+                SizedBox(width: 12),
+                Text(
+                  'Profil',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                SizedBox(width: 12),
+                Text(
+                  '· Your Profile',
+                  style: TextStyle(
+                    color: Color(0xFFB7DEC8),
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Scrollable content
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Avatar + email card
+                      _ProfileCard(
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 40,
+                              backgroundColor: const Color(0xFF2D6A4F),
+                              child: Text(
+                                _initials(email),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              email,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFF1B4332),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // Stats card
+                      _ProfileCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Stats',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1B4332),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _StatTile(
+                                    icon: Icons.location_city,
+                                    label: 'Municipalities visited',
+                                    value: '6',
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _StatTile(
+                                    icon: Icons.route,
+                                    label: 'Trail km matched',
+                                    value: '142 km',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _StatTile(
+                                    icon: Icons.cottage_outlined,
+                                    label: 'Huts checked in',
+                                    value: '3',
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _StatTile(
+                                    icon: Icons.sync,
+                                    label: 'Activities synced',
+                                    value: '47',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // Connected services card
+                      _ProfileCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Connected Services',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1B4332),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.directions_run,
+                                  color: Color(0xFFFC4C02),
+                                  size: 28,
+                                ),
+                                const SizedBox(width: 12),
+                                const Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Strava',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF1B4332),
+                                        ),
+                                      ),
+                                      Text(
+                                        'Not connected',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Color(0xFF6B7280),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                OutlinedButton(
+                                  onPressed: () {},
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: const Color(0xFF2D6A4F),
+                                    side: const BorderSide(
+                                        color: Color(0xFF2D6A4F)),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8)),
+                                  ),
+                                  child: const Text('Connect Strava'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileCard extends StatelessWidget {
+  final Widget child;
+  const _ProfileCard({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(20),
+      child: child,
+    );
+  }
+}
+
+class _StatTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _StatTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF1F8F4),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: const Color(0xFF2D6A4F), size: 22),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1B4332),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Login screen
 // ---------------------------------------------------------------------------
 
@@ -612,7 +903,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _login() {
     if (_emailController.text.isNotEmpty &&
         _passwordController.text.isNotEmpty) {
-      ref.read(authProvider).login();
+      ref.read(authProvider).login(_emailController.text.trim());
     }
   }
 
