@@ -287,32 +287,546 @@ class _SidebarButton extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Map view
+// Map view – data
 // ---------------------------------------------------------------------------
 
-class MapView extends StatelessWidget {
+Color _muniColor(int pct) {
+  if (pct == 0) return const Color(0xFFE0E0E0);
+  if (pct <= 30) return const Color(0xFF95D5B2);
+  if (pct <= 70) return const Color(0xFF52B788);
+  if (pct < 100) return const Color(0xFF2D6A4F);
+  return const Color(0xFF1B4332);
+}
+
+class _MuniMapData {
+  final String name;
+  final int completionPct;
+  final int hikingPct;
+  final int skiPct;
+  final int hutsVisited;
+  final int hutsTotal;
+  final List<LatLng> polygon;
+
+  const _MuniMapData({
+    required this.name,
+    required this.completionPct,
+    required this.hikingPct,
+    required this.skiPct,
+    required this.hutsVisited,
+    required this.hutsTotal,
+    required this.polygon,
+  });
+}
+
+const _muniMapData = [
+  _MuniMapData(
+    name: 'Oslo',
+    completionPct: 34,
+    hikingPct: 34,
+    skiPct: 18,
+    hutsVisited: 2,
+    hutsTotal: 8,
+    polygon: [
+      LatLng(59.80, 10.50),
+      LatLng(60.02, 10.50),
+      LatLng(60.02, 10.95),
+      LatLng(59.80, 10.95),
+    ],
+  ),
+  _MuniMapData(
+    name: 'Bergen',
+    completionPct: 12,
+    hikingPct: 12,
+    skiPct: 3,
+    hutsVisited: 1,
+    hutsTotal: 7,
+    polygon: [
+      LatLng(60.25, 5.10),
+      LatLng(60.55, 5.10),
+      LatLng(60.55, 5.55),
+      LatLng(60.25, 5.55),
+    ],
+  ),
+  _MuniMapData(
+    name: 'Tromsø',
+    completionPct: 67,
+    hikingPct: 67,
+    skiPct: 45,
+    hutsVisited: 3,
+    hutsTotal: 5,
+    polygon: [
+      LatLng(69.50, 18.70),
+      LatLng(69.85, 18.70),
+      LatLng(69.85, 19.30),
+      LatLng(69.50, 19.30),
+    ],
+  ),
+  _MuniMapData(
+    name: 'Trondheim',
+    completionPct: 8,
+    hikingPct: 8,
+    skiPct: 5,
+    hutsVisited: 0,
+    hutsTotal: 6,
+    polygon: [
+      LatLng(63.30, 10.20),
+      LatLng(63.55, 10.20),
+      LatLng(63.55, 10.65),
+      LatLng(63.30, 10.65),
+    ],
+  ),
+  _MuniMapData(
+    name: 'Ullensaker',
+    completionPct: 45,
+    hikingPct: 45,
+    skiPct: 30,
+    hutsVisited: 2,
+    hutsTotal: 4,
+    polygon: [
+      LatLng(60.05, 11.00),
+      LatLng(60.30, 11.00),
+      LatLng(60.30, 11.40),
+      LatLng(60.05, 11.40),
+    ],
+  ),
+  _MuniMapData(
+    name: 'Lillehammer',
+    completionPct: 23,
+    hikingPct: 23,
+    skiPct: 40,
+    hutsVisited: 1,
+    hutsTotal: 5,
+    polygon: [
+      LatLng(61.05, 10.30),
+      LatLng(61.25, 10.30),
+      LatLng(61.25, 10.65),
+      LatLng(61.05, 10.65),
+    ],
+  ),
+  _MuniMapData(
+    name: 'Bodø',
+    completionPct: 5,
+    hikingPct: 5,
+    skiPct: 2,
+    hutsVisited: 0,
+    hutsTotal: 4,
+    polygon: [
+      LatLng(67.20, 14.25),
+      LatLng(67.45, 14.25),
+      LatLng(67.45, 14.80),
+      LatLng(67.20, 14.80),
+    ],
+  ),
+  _MuniMapData(
+    name: 'Stavanger',
+    completionPct: 19,
+    hikingPct: 19,
+    skiPct: 4,
+    hutsVisited: 1,
+    hutsTotal: 6,
+    polygon: [
+      LatLng(58.85, 5.55),
+      LatLng(59.10, 5.55),
+      LatLng(59.10, 5.95),
+      LatLng(58.85, 5.95),
+    ],
+  ),
+];
+
+class _TrailData {
+  final List<LatLng> points;
+  final bool completed;
+  const _TrailData({required this.points, required this.completed});
+}
+
+const _trails = [
+  _TrailData(
+    points: [LatLng(59.9750, 10.7260), LatLng(59.9900, 10.6700)],
+    completed: true,
+  ),
+  _TrailData(
+    points: [LatLng(59.9900, 10.6700), LatLng(60.0050, 10.6650)],
+    completed: true,
+  ),
+  _TrailData(
+    points: [LatLng(60.0050, 10.6650), LatLng(60.0370, 10.6190)],
+    completed: true,
+  ),
+  _TrailData(
+    points: [LatLng(60.0370, 10.6190), LatLng(60.0600, 10.5880)],
+    completed: false,
+  ),
+  _TrailData(
+    points: [LatLng(60.0600, 10.5880), LatLng(60.0850, 10.5550)],
+    completed: false,
+  ),
+  _TrailData(
+    points: [LatLng(59.9750, 10.7260), LatLng(59.9600, 10.7800)],
+    completed: false,
+  ),
+];
+
+class _HutData {
+  final String name;
+  final LatLng location;
+  final bool visited;
+  const _HutData({
+    required this.name,
+    required this.location,
+    required this.visited,
+  });
+}
+
+const _huts = [
+  _HutData(
+    name: 'Ullevålseter',
+    location: LatLng(60.0050, 10.6650),
+    visited: true,
+  ),
+  _HutData(
+    name: 'Kikutstua',
+    location: LatLng(60.0370, 10.6190),
+    visited: true,
+  ),
+  _HutData(
+    name: 'Kobberhaughytta',
+    location: LatLng(60.0600, 10.5880),
+    visited: false,
+  ),
+  _HutData(
+    name: 'Frognerseteren',
+    location: LatLng(59.9840, 10.6500),
+    visited: false,
+  ),
+];
+
+// ---------------------------------------------------------------------------
+// Map view – widget
+// ---------------------------------------------------------------------------
+
+class MapView extends StatefulWidget {
   const MapView({super.key});
 
   @override
+  State<MapView> createState() => _MapViewState();
+}
+
+class _MapViewState extends State<MapView> {
+  final LayerHitNotifier<_MuniMapData> _hitNotifier = ValueNotifier(null);
+  _MuniMapData? _selectedMuni;
+  Offset? _popupOffset;
+
+  @override
+  void dispose() {
+    _hitNotifier.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FlutterMap(
-      options: const MapOptions(
-        initialCenter: LatLng(65.0, 15.0),
-        initialZoom: 5.0,
-      ),
+    return Stack(
       children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'no.nordquest.webapp',
-        ),
-        const RichAttributionWidget(
-          alignment: AttributionAlignment.bottomRight,
-          showFlutterMapAttribution: false,
-          attributions: [
-            TextSourceAttribution('© OpenStreetMap contributors'),
+        FlutterMap(
+          options: MapOptions(
+            initialCenter: const LatLng(65.0, 15.0),
+            initialZoom: 5.0,
+            onTap: (tapPosition, point) {
+              final hit = _hitNotifier.value;
+              final relative = tapPosition.relative;
+              if (hit != null && hit.hitValues.isNotEmpty && relative != null) {
+                setState(() {
+                  _selectedMuni = hit.hitValues.first;
+                  _popupOffset = relative;
+                });
+              } else {
+                setState(() {
+                  _selectedMuni = null;
+                  _popupOffset = null;
+                });
+              }
+            },
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'no.nordquest.webapp',
+            ),
+            PolygonLayer<_MuniMapData>(
+              hitNotifier: _hitNotifier,
+              polygons: _muniMapData.map((m) {
+                final col = _muniColor(m.completionPct);
+                return Polygon<_MuniMapData>(
+                  points: m.polygon,
+                  color: col.withOpacity(0.4),
+                  borderColor: col,
+                  borderStrokeWidth: 2.0,
+                  hitValue: m,
+                );
+              }).toList(),
+            ),
+            PolylineLayer(
+              polylines: _trails.map((t) {
+                if (t.completed) {
+                  return Polyline(
+                    points: t.points,
+                    color: const Color(0xFF2DB060),
+                    strokeWidth: 3.5,
+                  );
+                } else {
+                  return Polyline(
+                    points: t.points,
+                    color: const Color(0xFF9E9E9E),
+                    strokeWidth: 2.0,
+                    pattern: StrokePattern.dashed(segments: [10.0, 8.0]),
+                  );
+                }
+              }).toList(),
+            ),
+            MarkerLayer(
+              markers: _huts
+                  .map(
+                    (h) => Marker(
+                      point: h.location,
+                      width: 26,
+                      height: 26,
+                      child: _HutMarker(visited: h.visited),
+                    ),
+                  )
+                  .toList(),
+            ),
+            const RichAttributionWidget(
+              alignment: AttributionAlignment.bottomRight,
+              showFlutterMapAttribution: false,
+              attributions: [
+                TextSourceAttribution('© OpenStreetMap contributors'),
+              ],
+            ),
           ],
         ),
+        // Overall progress widget – bottom-right corner
+        const Positioned(
+          bottom: 40,
+          right: 16,
+          child: _OverallProgressWidget(),
+        ),
+        // Municipality popup on tap
+        if (_selectedMuni != null && _popupOffset != null)
+          _buildPopup(_selectedMuni!, _popupOffset!),
       ],
+    );
+  }
+
+  Widget _buildPopup(_MuniMapData muni, Offset tapPos) {
+    const double popupH = 152.0;
+    final double left = tapPos.dx + 12;
+    final double top = (tapPos.dy - popupH - 12).clamp(4.0, double.infinity);
+    return Positioned(
+      left: left,
+      top: top,
+      child: _MuniPopup(muni: muni),
+    );
+  }
+}
+
+class _HutMarker extends StatelessWidget {
+  final bool visited;
+  const _HutMarker({required this.visited});
+
+  @override
+  Widget build(BuildContext context) {
+    if (visited) {
+      return Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFF2D6A4F),
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(Icons.cottage, color: Colors.white, size: 14),
+      );
+    }
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: const Color(0xFF9E9E9E), width: 2),
+      ),
+      child:
+          const Icon(Icons.cottage_outlined, color: Color(0xFF9E9E9E), size: 12),
+    );
+  }
+}
+
+class _MuniPopup extends StatelessWidget {
+  final _MuniMapData muni;
+  const _MuniPopup({required this.muni});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _muniColor(muni.completionPct);
+    return Material(
+      elevation: 8,
+      borderRadius: BorderRadius.circular(10),
+      shadowColor: Colors.black26,
+      child: Container(
+        width: 215,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    muni.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: Color(0xFF1B4332),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration:
+                      BoxDecoration(color: color, shape: BoxShape.circle),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  '${muni.completionPct}%',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            const Divider(height: 1),
+            const SizedBox(height: 8),
+            _PopupRow(
+              icon: Icons.hiking,
+              label: 'Hiking trails',
+              value: '${muni.hikingPct}%',
+            ),
+            const SizedBox(height: 6),
+            _PopupRow(
+              icon: Icons.downhill_skiing,
+              label: 'Ski trails',
+              value: '${muni.skiPct}%',
+            ),
+            const SizedBox(height: 6),
+            _PopupRow(
+              icon: Icons.cottage_outlined,
+              label: 'Huts',
+              value: '${muni.hutsVisited}/${muni.hutsTotal} visited',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PopupRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _PopupRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: const Color(0xFF52B788)),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+        ),
+        const Spacer(),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF374151),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _OverallProgressWidget extends StatelessWidget {
+  const _OverallProgressWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.18),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 38,
+            height: 38,
+            child: CircularProgressIndicator(
+              value: 0.042,
+              backgroundColor: const Color(0xFFE8F5EE),
+              valueColor:
+                  const AlwaysStoppedAnimation<Color>(Color(0xFF2D6A4F)),
+              strokeWidth: 4.5,
+            ),
+          ),
+          const SizedBox(width: 12),
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Norway explored',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Color(0xFF6B7280),
+                  letterSpacing: 0.3,
+                ),
+              ),
+              SizedBox(height: 2),
+              Text(
+                '4.2%',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1B4332),
+                  letterSpacing: -0.5,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
