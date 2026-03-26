@@ -4,6 +4,7 @@
 
 [build.environment]
   FLUTTER_VERSION = "3.41.5"
+  SECRETS_SCAN_OMIT_KEYS = "SUPABASE_URL,SUPABASE_ANON_KEY"
 
 [[plugins]]
   package = "netlify-plugin-flutter"
