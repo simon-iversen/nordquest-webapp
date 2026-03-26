@@ -50,7 +50,7 @@ final _router = GoRouter(
         GoRoute(path: '/map', builder: (_, __) => const MapView()),
         GoRoute(
           path: '/progress',
-          builder: (_, __) => const _PlaceholderView(label: 'Progress'),
+          builder: (_, __) => const ProgressView(),
         ),
         GoRoute(
           path: '/profile',
@@ -341,6 +341,248 @@ class _PlaceholderView extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Progress screen
+// ---------------------------------------------------------------------------
+
+class _MunicipalityProgress {
+  final String name;
+  final int hikingPct;
+  final int skiPct;
+  final int hutsVisited;
+  final int hutsTotal;
+
+  const _MunicipalityProgress({
+    required this.name,
+    required this.hikingPct,
+    required this.skiPct,
+    required this.hutsVisited,
+    required this.hutsTotal,
+  });
+}
+
+const _fakeData = [
+  _MunicipalityProgress(
+    name: 'Oslo',
+    hikingPct: 34,
+    skiPct: 12,
+    hutsVisited: 2,
+    hutsTotal: 8,
+  ),
+  _MunicipalityProgress(
+    name: 'Bergen',
+    hikingPct: 51,
+    skiPct: 5,
+    hutsVisited: 4,
+    hutsTotal: 11,
+  ),
+  _MunicipalityProgress(
+    name: 'Tromsø',
+    hikingPct: 18,
+    skiPct: 42,
+    hutsVisited: 1,
+    hutsTotal: 6,
+  ),
+  _MunicipalityProgress(
+    name: 'Trondheim',
+    hikingPct: 27,
+    skiPct: 31,
+    hutsVisited: 3,
+    hutsTotal: 9,
+  ),
+  _MunicipalityProgress(
+    name: 'Lillehammer',
+    hikingPct: 63,
+    skiPct: 78,
+    hutsVisited: 5,
+    hutsTotal: 7,
+  ),
+  _MunicipalityProgress(
+    name: 'Ullensaker',
+    hikingPct: 9,
+    skiPct: 22,
+    hutsVisited: 0,
+    hutsTotal: 3,
+  ),
+];
+
+class ProgressView extends StatelessWidget {
+  const ProgressView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color(0xFFF1F8F4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header
+          Container(
+            color: const Color(0xFF1B4332),
+            padding: const EdgeInsets.fromLTRB(32, 28, 32, 24),
+            child: const Row(
+              children: [
+                Icon(Icons.bar_chart, color: Colors.white, size: 28),
+                SizedBox(width: 12),
+                Text(
+                  'Fremgang',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                SizedBox(width: 12),
+                Text(
+                  '· Your Progress',
+                  style: TextStyle(
+                    color: Color(0xFFB7DEC8),
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Cards
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(24),
+              itemCount: _fakeData.length,
+              itemBuilder: (context, i) =>
+                  _MunicipalityCard(data: _fakeData[i]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MunicipalityCard extends StatelessWidget {
+  final _MunicipalityProgress data;
+  const _MunicipalityCard({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      constraints: const BoxConstraints(maxWidth: 720),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Municipality name
+            Text(
+              data.name,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1B4332),
+              ),
+            ),
+            const SizedBox(height: 14),
+            _CategoryRow(
+              icon: Icons.hiking,
+              label: 'Hiking trails',
+              value: '${data.hikingPct}%',
+              fraction: data.hikingPct / 100,
+              color: const Color(0xFF2D6A4F),
+            ),
+            const SizedBox(height: 10),
+            _CategoryRow(
+              icon: Icons.downhill_skiing,
+              label: 'Ski trails',
+              value: '${data.skiPct}%',
+              fraction: data.skiPct / 100,
+              color: const Color(0xFF52B788),
+            ),
+            const SizedBox(height: 10),
+            _CategoryRow(
+              icon: Icons.cottage_outlined,
+              label: 'Huts',
+              value: '${data.hutsVisited}/${data.hutsTotal}',
+              fraction: data.hutsTotal == 0
+                  ? 0
+                  : data.hutsVisited / data.hutsTotal,
+              color: const Color(0xFF95D5B2),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final double fraction;
+  final Color color;
+
+  const _CategoryRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.fraction,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: const Color(0xFF2D6A4F)),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 110,
+          child: Text(
+            label,
+            style: const TextStyle(fontSize: 13, color: Color(0xFF374151)),
+          ),
+        ),
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: fraction,
+              minHeight: 8,
+              backgroundColor: const Color(0xFFE8F5EE),
+              valueColor: AlwaysStoppedAnimation<Color>(color),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: 42,
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
