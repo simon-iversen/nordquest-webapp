@@ -408,6 +408,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             right: 16,
             child: AdventurePreviewPanel(
               highlight: _selectedHighlight!,
+              allHighlights: _highlights,
+              onExploreRelated: (highlight) {
+                _mapController.move(highlight.center, highlight.zoom);
+                setState(() {
+                  _selectedHighlight = highlight;
+                  _selectedVibe = highlight.vibe;
+                  _selectedEffort = highlight.effort;
+                });
+              },
               onClose: () {
                 setState(() {
                   _selectedHighlight = null;

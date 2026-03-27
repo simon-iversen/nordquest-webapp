@@ -6,11 +6,15 @@ import 'package:nordquest_webapp/src/features/map/presentation/widgets/explore_h
 
 class AdventurePreviewPanel extends StatelessWidget {
   final ExploreHighlight highlight;
+  final List<ExploreHighlight> allHighlights;
+  final ValueChanged<ExploreHighlight> onExploreRelated;
   final VoidCallback onClose;
 
   const AdventurePreviewPanel({
     super.key,
     required this.highlight,
+    required this.allHighlights,
+    required this.onExploreRelated,
     required this.onClose,
   });
 
@@ -308,10 +312,37 @@ class AdventurePreviewPanel extends StatelessWidget {
                 ),
               ),
             ),
+            if (_relatedHighlights.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              _KeepExploringSection(
+                currentHighlight: highlight,
+                relatedHighlights: _relatedHighlights,
+                onSelected: onExploreRelated,
+              ),
+            ],
           ],
         ),
       ),
     );
+  }
+
+  List<ExploreHighlight> get _relatedHighlights {
+    final related = allHighlights
+        .where((candidate) => candidate != highlight)
+        .toList();
+    related.sort((a, b) => _relatedScore(b).compareTo(_relatedScore(a)));
+    return related.take(2).toList();
+  }
+
+  int _relatedScore(ExploreHighlight candidate) {
+    var score = 0;
+    if (candidate.vibe == highlight.vibe) score += 3;
+    if (candidate.effort == highlight.effort) score += 2;
+    if (candidate.regionLabel.split(' ').first ==
+        highlight.regionLabel.split(' ').first) {
+      score += 1;
+    }
+    return score;
   }
 
   String _effortGuidance(ExploreEffort effort) {
@@ -351,20 +382,26 @@ class _StatChip extends StatelessWidget {
         color: background,
         borderRadius: BorderRadius.circular(999),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: foreground),
-          const SizedBox(width: AppSpacing.xs + 2),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: AppTypography.xs + 1,
-              color: foreground,
-              fontWeight: FontWeight.w600,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 180),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: foreground),
+            const SizedBox(width: AppSpacing.xs + 2),
+            Flexible(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: AppTypography.xs + 1,
+                  color: foreground,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -464,6 +501,179 @@ class _PlaceFact extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _KeepExploringSection extends StatelessWidget {
+  final ExploreHighlight currentHighlight;
+  final List<ExploreHighlight> relatedHighlights;
+  final ValueChanged<ExploreHighlight> onSelected;
+
+  const _KeepExploringSection({
+    required this.currentHighlight,
+    required this.relatedHighlights,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEEF5F1),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: const Color(0xFFD7E4DC)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Keep exploring',
+            style: TextStyle(
+              fontSize: AppTypography.md,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF16332B),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            'If ${currentHighlight.title} feels right, these nearby moods are the next natural mock adventures to open.',
+            style: const TextStyle(
+              fontSize: AppTypography.sm,
+              color: Color(0xFF52606D),
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          ...relatedHighlights.map(
+            (related) => Padding(
+              padding: EdgeInsets.only(
+                bottom: related == relatedHighlights.last ? 0 : AppSpacing.sm,
+              ),
+              child: _RelatedAdventureCard(
+                highlight: related,
+                reason: _reasonFor(currentHighlight, related),
+                onTap: () => onSelected(related),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _reasonFor(ExploreHighlight current, ExploreHighlight related) {
+    if (current.vibe == related.vibe) {
+      return 'Same outdoor vibe, different part of Norway';
+    }
+    if (current.effort == related.effort) {
+      return 'Same effort level, new landscape payoff';
+    }
+    return 'A good next branch from this preview';
+  }
+}
+
+class _RelatedAdventureCard extends StatelessWidget {
+  final ExploreHighlight highlight;
+  final String reason;
+  final VoidCallback onTap;
+
+  const _RelatedAdventureCard({
+    required this.highlight,
+    required this.reason,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        onTap: onTap,
+        child: Ink(
+          padding: const EdgeInsets.all(AppSpacing.sm + 2),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            border: Border.all(color: const Color(0xFFD9E6DE)),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: highlight.gradient),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: Icon(highlight.icon, color: Colors.white, size: 20),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      reason,
+                      style: const TextStyle(
+                        fontSize: AppTypography.xs + 1,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF4E6A5D),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      highlight.title,
+                      style: const TextStyle(
+                        fontSize: AppTypography.sm,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF16332B),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      highlight.subtitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: AppTypography.sm,
+                        color: Color(0xFF52606D),
+                        height: 1.35,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Wrap(
+                      spacing: AppSpacing.sm,
+                      runSpacing: AppSpacing.xs,
+                      children: [
+                        _StatChip(
+                          icon: Icons.place_rounded,
+                          label: highlight.regionLabel,
+                        ),
+                        _StatChip(
+                          icon: highlight.effort.icon,
+                          label: highlight.effort.shortLabel,
+                          accent: highlight.effort.accent,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              const Icon(
+                Icons.arrow_forward_rounded,
+                size: 18,
+                color: Color(0xFF4E6A5D),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
