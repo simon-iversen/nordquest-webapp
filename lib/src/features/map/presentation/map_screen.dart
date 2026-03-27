@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:nordquest_webapp/src/features/map/domain/municipality.dart';
 import 'package:nordquest_webapp/src/features/map/logic/map_providers.dart';
+import 'package:nordquest_webapp/src/features/map/presentation/widgets/adventure_preview_panel.dart';
 import 'package:nordquest_webapp/src/features/map/presentation/widgets/explore_highlights_panel.dart';
 import 'package:nordquest_webapp/src/features/map/presentation/widgets/hut_marker.dart';
 import 'package:nordquest_webapp/src/features/map/presentation/widgets/municipality_popup.dart';
@@ -21,6 +22,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   final MapController _mapController = MapController();
   Municipality? _selectedMuni;
   Offset? _popupOffset;
+  ExploreHighlight? _selectedHighlight;
 
   static const List<ExploreHighlight> _highlights = [
     ExploreHighlight(
@@ -29,10 +31,45 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           'Sharp ridgelines, a glowing fjord backdrop, and a hut stop that feels properly Arctic.',
       badge: 'Mock route',
       detail: '2 hikes + 1 hut + big summit energy',
+      duration: '2 days / 1 basecamp',
+      bestFor: 'Ridges + fjord views',
+      whyItWorks:
+          'It turns the map into a clear weekend idea instead of a blank northern expanse. You instantly get a place, a mood, and a route rhythm.',
       icon: Icons.landscape_rounded,
       center: LatLng(69.55, 19.75),
       zoom: 8.2,
       gradient: [Color(0xFF214E57), Color(0xFF3F7D6A)],
+      route: [
+        LatLng(69.574, 19.764),
+        LatLng(69.618, 19.812),
+        LatLng(69.661, 19.928),
+      ],
+      stops: [
+        ExploreStop(
+          title: 'Fjord trailhead',
+          note:
+              'Ease into the weekend with a short climb and instant water-to-peak contrast.',
+          icon: Icons.directions_walk_rounded,
+          markerColor: Color(0xFF2D6A4F),
+          location: LatLng(69.574, 19.764),
+        ),
+        ExploreStop(
+          title: 'Mock hut night',
+          note:
+              'A fake cozy stop for drying layers, watching late light, and plotting the summit morning.',
+          icon: Icons.cottage_rounded,
+          markerColor: Color(0xFFB08968),
+          location: LatLng(69.618, 19.812),
+        ),
+        ExploreStop(
+          title: 'Ridgeline viewpoint',
+          note:
+              'The dramatic payoff: open fjord views and that proper Lyngen knife-edge feeling.',
+          icon: Icons.photo_camera_back_rounded,
+          markerColor: Color(0xFF6D597A),
+          location: LatLng(69.661, 19.928),
+        ),
+      ],
     ),
     ExploreHighlight(
       title: 'Jotunheimen cabin loop',
@@ -40,10 +77,54 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           'A simple mock multi-day idea built around lakes, huts, and one iconic high-mountain area.',
       badge: 'Hut trip',
       detail: '3 cabins linked into one neat adventure',
+      duration: '3 days / hut-to-hut',
+      bestFor: 'Cabins + alpine calm',
+      whyItWorks:
+          'This gives first-time explorers an understandable shape: start, sleep, move, repeat. The mountains feel approachable instead of overwhelming.',
       icon: Icons.cottage_rounded,
       center: LatLng(61.55, 8.45),
       zoom: 8.0,
       gradient: [Color(0xFF5B7C3F), Color(0xFF8AB17D)],
+      route: [
+        LatLng(61.499, 8.394),
+        LatLng(61.546, 8.431),
+        LatLng(61.583, 8.519),
+        LatLng(61.622, 8.582),
+      ],
+      stops: [
+        ExploreStop(
+          title: 'Lake approach',
+          note:
+              'A gentle first stretch where the landscape opens up without asking too much too early.',
+          icon: Icons.water_rounded,
+          markerColor: Color(0xFF457B9D),
+          location: LatLng(61.499, 8.394),
+        ),
+        ExploreStop(
+          title: 'Cabin one',
+          note:
+              'Mock overnight with a classic “boots off, soup on” mountain-hut vibe.',
+          icon: Icons.cabin_rounded,
+          markerColor: Color(0xFF8D6E63),
+          location: LatLng(61.546, 8.431),
+        ),
+        ExploreStop(
+          title: 'High plateau crossing',
+          note:
+              'Open sky, long sightlines, and that spacious Jotunheimen feeling.',
+          icon: Icons.terrain_rounded,
+          markerColor: Color(0xFF6A994E),
+          location: LatLng(61.583, 8.519),
+        ),
+        ExploreStop(
+          title: 'Cabin loop finish',
+          note:
+              'A tidy finish that makes the whole trip feel achievable and worth repeating.',
+          icon: Icons.flag_rounded,
+          markerColor: Color(0xFFBC6C25),
+          location: LatLng(61.622, 8.582),
+        ),
+      ],
     ),
     ExploreHighlight(
       title: 'Lofoten sea-to-summit',
@@ -51,10 +132,45 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           'A mock discovery stop for dramatic coastline views and a short trail with maximum payoff.',
       badge: 'Scenic stop',
       detail: 'Coastline drama in one tap',
+      duration: 'Half day / photo-heavy',
+      bestFor: 'Sea cliffs + payoff',
+      whyItWorks:
+          'It adds instant delight. One click and the app suggests a punchy coastal adventure that feels specific, cinematic, and easy to imagine.',
       icon: Icons.wb_sunny_outlined,
       center: LatLng(68.23, 13.61),
       zoom: 9.0,
       gradient: [Color(0xFF355070), Color(0xFF6D597A)],
+      route: [
+        LatLng(68.214, 13.584),
+        LatLng(68.236, 13.613),
+        LatLng(68.252, 13.655),
+      ],
+      stops: [
+        ExploreStop(
+          title: 'Beach start',
+          note:
+              'Begin near the sand with sea spray, low effort, and immediate postcard energy.',
+          icon: Icons.beach_access_rounded,
+          markerColor: Color(0xFF3D5A80),
+          location: LatLng(68.214, 13.584),
+        ),
+        ExploreStop(
+          title: 'Steady climb',
+          note:
+              'A short mock ascent where every switchback reveals more coastline.',
+          icon: Icons.hiking_rounded,
+          markerColor: Color(0xFF588157),
+          location: LatLng(68.236, 13.613),
+        ),
+        ExploreStop(
+          title: 'Sea-to-summit viewpoint',
+          note:
+              'The compact payoff: jagged peaks, open ocean, and very little ambiguity about why you came.',
+          icon: Icons.visibility_rounded,
+          markerColor: Color(0xFF9C6644),
+          location: LatLng(68.252, 13.655),
+        ),
+      ],
     ),
   ];
 
@@ -84,6 +200,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 setState(() {
                   _selectedMuni = hit.hitValues.first;
                   _popupOffset = relative;
+                  _selectedHighlight = null;
                 });
               } else {
                 setState(() {
@@ -129,6 +246,18 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 }
               }).toList(),
             ),
+            if (_selectedHighlight != null)
+              PolylineLayer(
+                polylines: [
+                  Polyline(
+                    points: _selectedHighlight!.route,
+                    color: const Color(0xFF114B5F),
+                    strokeWidth: 5,
+                    borderColor: Colors.white.withValues(alpha: 0.85),
+                    borderStrokeWidth: 2,
+                  ),
+                ],
+              ),
             MarkerLayer(
               markers: huts
                   .map(
@@ -141,6 +270,19 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                   )
                   .toList(),
             ),
+            if (_selectedHighlight != null)
+              MarkerLayer(
+                markers: _selectedHighlight!.stops
+                    .map(
+                      (stop) => Marker(
+                        point: stop.location,
+                        width: 40,
+                        height: 40,
+                        child: _AdventureStopMarker(stop: stop),
+                      ),
+                    )
+                    .toList(),
+              ),
             const RichAttributionWidget(
               alignment: AttributionAlignment.bottomRight,
               showFlutterMapAttribution: false,
@@ -160,10 +302,24 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               setState(() {
                 _selectedMuni = null;
                 _popupOffset = null;
+                _selectedHighlight = highlight;
               });
             },
           ),
         ),
+        if (_selectedHighlight != null)
+          Positioned(
+            top: 16,
+            right: 16,
+            child: AdventurePreviewPanel(
+              highlight: _selectedHighlight!,
+              onClose: () {
+                setState(() {
+                  _selectedHighlight = null;
+                });
+              },
+            ),
+          ),
         const Positioned(bottom: 40, right: 16, child: OverallProgressWidget()),
         if (_selectedMuni != null && _popupOffset != null)
           _buildPopup(_selectedMuni!, _popupOffset!),
@@ -179,6 +335,37 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       left: left,
       top: top,
       child: MunicipalityPopup(municipality: muni),
+    );
+  }
+}
+
+class _AdventureStopMarker extends StatelessWidget {
+  final ExploreStop stop;
+
+  const _AdventureStopMarker({required this.stop});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.18),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(4),
+      child: Container(
+        decoration: BoxDecoration(
+          color: stop.markerColor,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(stop.icon, color: Colors.white, size: 18),
+      ),
     );
   }
 }

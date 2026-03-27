@@ -9,20 +9,46 @@ class ExploreHighlight {
   final String subtitle;
   final String badge;
   final String detail;
+  final String duration;
+  final String bestFor;
+  final String whyItWorks;
   final IconData icon;
   final LatLng center;
   final double zoom;
   final List<Color> gradient;
+  final List<LatLng> route;
+  final List<ExploreStop> stops;
 
   const ExploreHighlight({
     required this.title,
     required this.subtitle,
     required this.badge,
     required this.detail,
+    required this.duration,
+    required this.bestFor,
+    required this.whyItWorks,
     required this.icon,
     required this.center,
     required this.zoom,
     required this.gradient,
+    required this.route,
+    required this.stops,
+  });
+}
+
+class ExploreStop {
+  final String title;
+  final String note;
+  final IconData icon;
+  final Color markerColor;
+  final LatLng location;
+
+  const ExploreStop({
+    required this.title,
+    required this.note,
+    required this.icon,
+    required this.markerColor,
+    required this.location,
   });
 }
 
@@ -176,6 +202,31 @@ class _HighlightCard extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.88),
                     fontWeight: FontWeight.w500,
                   ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.travel_explore_rounded,
+                      size: 16,
+                      color: Colors.white.withValues(alpha: 0.92),
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Text(
+                      'Preview route',
+                      style: TextStyle(
+                        fontSize: AppTypography.xs + 1,
+                        color: Colors.white.withValues(alpha: 0.92),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Spacer(),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 18,
+                      color: Colors.white.withValues(alpha: 0.92),
+                    ),
+                  ],
                 ),
               ],
             ),
