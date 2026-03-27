@@ -4,6 +4,39 @@ import 'package:nordquest_webapp/src/design_system/foundations/app_radius.dart';
 import 'package:nordquest_webapp/src/design_system/foundations/app_spacing.dart';
 import 'package:nordquest_webapp/src/design_system/foundations/app_typography.dart';
 
+enum ExploreVibe {
+  all(
+    label: 'All',
+    description: 'See a mix of mock adventures across Norway.',
+    icon: Icons.explore_rounded,
+  ),
+  ridges(
+    label: 'Ridges',
+    description: 'Sharp lines, summit feeling, and dramatic terrain.',
+    icon: Icons.landscape_rounded,
+  ),
+  cabins(
+    label: 'Cabins',
+    description: 'Cozy hut-to-hut ideas with calmer pacing.',
+    icon: Icons.cabin_rounded,
+  ),
+  coast(
+    label: 'Coast',
+    description: 'Sea cliffs, beaches, and high-payoff views.',
+    icon: Icons.waves_rounded,
+  );
+
+  const ExploreVibe({
+    required this.label,
+    required this.description,
+    required this.icon,
+  });
+
+  final String label;
+  final String description;
+  final IconData icon;
+}
+
 class ExploreHighlight {
   final String title;
   final String subtitle;
@@ -18,6 +51,7 @@ class ExploreHighlight {
   final List<Color> gradient;
   final List<LatLng> route;
   final List<ExploreStop> stops;
+  final ExploreVibe vibe;
 
   const ExploreHighlight({
     required this.title,
@@ -33,6 +67,7 @@ class ExploreHighlight {
     required this.gradient,
     required this.route,
     required this.stops,
+    required this.vibe,
   });
 }
 
@@ -55,17 +90,27 @@ class ExploreStop {
 class ExploreHighlightsPanel extends StatelessWidget {
   final List<ExploreHighlight> highlights;
   final ValueChanged<ExploreHighlight> onSelected;
+  final ExploreVibe selectedVibe;
+  final ValueChanged<ExploreVibe> onVibeSelected;
 
   const ExploreHighlightsPanel({
     super.key,
     required this.highlights,
     required this.onSelected,
+    required this.selectedVibe,
+    required this.onVibeSelected,
   });
 
   @override
   Widget build(BuildContext context) {
+    final visibleHighlights = selectedVibe == ExploreVibe.all
+        ? highlights
+        : highlights
+              .where((highlight) => highlight.vibe == selectedVibe)
+              .toList();
+
     return Container(
-      width: 320,
+      width: 340,
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.96),
@@ -93,7 +138,7 @@ class ExploreHighlightsPanel extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.xs),
           const Text(
-            'A few mock adventures to help the map feel discoverable, not just readable.',
+            'Start from the kind of outdoor feeling you want, not just a place on the map.',
             style: TextStyle(
               fontSize: AppTypography.sm,
               height: 1.4,
@@ -101,7 +146,85 @@ class ExploreHighlightsPanel extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          ...highlights.map(
+          const Text(
+            'Browse by vibe',
+            style: TextStyle(
+              fontSize: AppTypography.sm,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF24453A),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: ExploreVibe.values
+                .map(
+                  (vibe) => _VibeChip(
+                    vibe: vibe,
+                    isSelected: vibe == selectedVibe,
+                    onTap: () => onVibeSelected(vibe),
+                  ),
+                )
+                .toList(),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppSpacing.sm + 2),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF4F8F5),
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              border: Border.all(color: const Color(0xFFDDE7E1)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE2EFE8),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Icon(
+                    selectedVibe.icon,
+                    color: const Color(0xFF1B4332),
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        selectedVibe == ExploreVibe.all
+                            ? 'Open the whole map'
+                            : '${selectedVibe.label} mode',
+                        style: const TextStyle(
+                          fontSize: AppTypography.sm,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1B4332),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        selectedVibe.description,
+                        style: const TextStyle(
+                          fontSize: AppTypography.xs + 1,
+                          color: Color(0xFF52606D),
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          ...visibleHighlights.map(
             (highlight) => Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
               child: _HighlightCard(
@@ -111,6 +234,65 @@ class ExploreHighlightsPanel extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _VibeChip extends StatelessWidget {
+  final ExploreVibe vibe;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _VibeChip({
+    required this.vibe,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onTap,
+        child: Ink(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm + 2,
+            vertical: AppSpacing.sm,
+          ),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? const Color(0xFF1B4332)
+                : const Color(0xFFF4F8F5),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: isSelected
+                  ? const Color(0xFF1B4332)
+                  : const Color(0xFFD6E5DC),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                vibe.icon,
+                size: 16,
+                color: isSelected ? Colors.white : const Color(0xFF335C4A),
+              ),
+              const SizedBox(width: AppSpacing.xs + 2),
+              Text(
+                vibe.label,
+                style: TextStyle(
+                  fontSize: AppTypography.xs + 1,
+                  fontWeight: FontWeight.w700,
+                  color: isSelected ? Colors.white : const Color(0xFF335C4A),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

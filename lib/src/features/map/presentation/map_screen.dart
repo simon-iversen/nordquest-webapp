@@ -23,6 +23,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   Municipality? _selectedMuni;
   Offset? _popupOffset;
   ExploreHighlight? _selectedHighlight;
+  ExploreVibe _selectedVibe = ExploreVibe.all;
 
   static const List<ExploreHighlight> _highlights = [
     ExploreHighlight(
@@ -39,6 +40,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       center: LatLng(69.55, 19.75),
       zoom: 8.2,
       gradient: [Color(0xFF214E57), Color(0xFF3F7D6A)],
+      vibe: ExploreVibe.ridges,
       route: [
         LatLng(69.574, 19.764),
         LatLng(69.618, 19.812),
@@ -85,6 +87,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       center: LatLng(61.55, 8.45),
       zoom: 8.0,
       gradient: [Color(0xFF5B7C3F), Color(0xFF8AB17D)],
+      vibe: ExploreVibe.cabins,
       route: [
         LatLng(61.499, 8.394),
         LatLng(61.546, 8.431),
@@ -140,6 +143,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       center: LatLng(68.23, 13.61),
       zoom: 9.0,
       gradient: [Color(0xFF355070), Color(0xFF6D597A)],
+      vibe: ExploreVibe.coast,
       route: [
         LatLng(68.214, 13.584),
         LatLng(68.236, 13.613),
@@ -297,12 +301,24 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           left: 16,
           child: ExploreHighlightsPanel(
             highlights: _highlights,
+            selectedVibe: _selectedVibe,
+            onVibeSelected: (vibe) {
+              setState(() {
+                _selectedVibe = vibe;
+                if (_selectedHighlight != null &&
+                    vibe != ExploreVibe.all &&
+                    _selectedHighlight!.vibe != vibe) {
+                  _selectedHighlight = null;
+                }
+              });
+            },
             onSelected: (highlight) {
               _mapController.move(highlight.center, highlight.zoom);
               setState(() {
                 _selectedMuni = null;
                 _popupOffset = null;
                 _selectedHighlight = highlight;
+                _selectedVibe = highlight.vibe;
               });
             },
           ),
