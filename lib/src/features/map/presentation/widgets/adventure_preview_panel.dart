@@ -18,6 +18,7 @@ class AdventurePreviewPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 340,
+      constraints: const BoxConstraints(maxHeight: 720),
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.97),
@@ -30,226 +31,285 @@ class AdventurePreviewPanel extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm,
-                        vertical: AppSpacing.xs,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: highlight.gradient),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        highlight.badge,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: AppTypography.xs,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      highlight.title,
-                      style: const TextStyle(
-                        fontSize: AppTypography.xl - 2,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF16332B),
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      highlight.subtitle,
-                      style: const TextStyle(
-                        fontSize: AppTypography.sm,
-                        color: Color(0xFF52606D),
-                        height: 1.45,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              IconButton(
-                onPressed: onClose,
-                tooltip: 'Close preview',
-                visualDensity: VisualDensity.compact,
-                icon: const Icon(Icons.close_rounded),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Wrap(
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm,
-            children: [
-              _StatChip(icon: Icons.route_rounded, label: highlight.detail),
-              _StatChip(
-                icon: Icons.schedule_rounded,
-                label: highlight.duration,
-              ),
-              _StatChip(icon: Icons.park_rounded, label: highlight.bestFor),
-              _StatChip(
-                icon: highlight.effort.icon,
-                label: highlight.effort.label,
-                accent: highlight.effort.accent,
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF5F8F6),
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(color: const Color(0xFFDDE7E1)),
-            ),
-            child: Column(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Why this feels worth opening',
-                  style: TextStyle(
-                    fontSize: AppTypography.sm,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1B4332),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  highlight.whyItWorks,
-                  style: const TextStyle(
-                    fontSize: AppTypography.sm,
-                    color: Color(0xFF52606D),
-                    height: 1.45,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF7FAF8),
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(color: const Color(0xFFDDE7E1)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Quick read',
-                  style: TextStyle(
-                    fontSize: AppTypography.sm,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1B4332),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Wrap(
-                  spacing: AppSpacing.sm,
-                  runSpacing: AppSpacing.sm,
-                  children: highlight.snapshot
-                      .map((fact) => _SnapshotFactChip(fact: fact))
-                      .toList(),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
-              color: highlight.effort.accent.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(
-                color: highlight.effort.accent.withValues(alpha: 0.22),
-              ),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 34,
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: highlight.effort.accent.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Icon(
-                    highlight.effort.icon,
-                    size: 18,
-                    color: highlight.effort.accent,
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        '${highlight.effort.label} mock outing',
-                        style: const TextStyle(
-                          fontSize: AppTypography.sm,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF16332B),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm,
+                          vertical: AppSpacing.xs,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(colors: highlight.gradient),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          highlight.badge,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: AppTypography.xs,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: AppSpacing.sm),
                       Text(
-                        _effortGuidance(highlight.effort),
+                        highlight.title,
+                        style: const TextStyle(
+                          fontSize: AppTypography.xl - 2,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF16332B),
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        highlight.subtitle,
                         style: const TextStyle(
                           fontSize: AppTypography.sm,
                           color: Color(0xFF52606D),
-                          height: 1.4,
+                          height: 1.45,
                         ),
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(width: AppSpacing.sm),
+                IconButton(
+                  onPressed: onClose,
+                  tooltip: 'Close preview',
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.close_rounded),
+                ),
               ],
             ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          const Text(
-            'Mock route flow',
-            style: TextStyle(
-              fontSize: AppTypography.md,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF16332B),
-              letterSpacing: -0.3,
+            const SizedBox(height: AppSpacing.md),
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: [
+                _StatChip(icon: Icons.route_rounded, label: highlight.detail),
+                _StatChip(
+                  icon: Icons.schedule_rounded,
+                  label: highlight.duration,
+                ),
+                _StatChip(icon: Icons.park_rounded, label: highlight.bestFor),
+                _StatChip(
+                  icon: highlight.effort.icon,
+                  label: highlight.effort.label,
+                  accent: highlight.effort.accent,
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          ...highlight.stops.asMap().entries.map(
-            (entry) => Padding(
-              padding: EdgeInsets.only(
-                bottom: entry.key == highlight.stops.length - 1
-                    ? 0
-                    : AppSpacing.sm,
+            const SizedBox(height: AppSpacing.md),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    highlight.gradient.first.withValues(alpha: 0.14),
+                    highlight.gradient.last.withValues(alpha: 0.08),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                border: Border.all(
+                  color: highlight.gradient.last.withValues(alpha: 0.16),
+                ),
               ),
-              child: _StopTile(
-                stop: entry.value,
-                isLast: entry.key == highlight.stops.length - 1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Sense of place',
+                    style: TextStyle(
+                      fontSize: AppTypography.sm,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1B4332),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
+                    children: [
+                      _PlaceFact(
+                        icon: Icons.place_rounded,
+                        label: 'Region',
+                        value: highlight.regionLabel,
+                      ),
+                      _PlaceFact(
+                        icon: Icons.terrain_rounded,
+                        label: 'Terrain',
+                        value: highlight.terrainLabel,
+                      ),
+                      _PlaceFact(
+                        icon: Icons.wb_sunny_outlined,
+                        label: 'Best in',
+                        value: highlight.seasonLabel,
+                      ),
+                      _PlaceFact(
+                        icon: Icons.auto_awesome_rounded,
+                        label: 'Feels like',
+                        value: highlight.momentLabel,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: AppSpacing.md),
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5F8F6),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                border: Border.all(color: const Color(0xFFDDE7E1)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Why this feels worth opening',
+                    style: TextStyle(
+                      fontSize: AppTypography.sm,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1B4332),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    highlight.whyItWorks,
+                    style: const TextStyle(
+                      fontSize: AppTypography.sm,
+                      color: Color(0xFF52606D),
+                      height: 1.45,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF7FAF8),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                border: Border.all(color: const Color(0xFFDDE7E1)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Quick read',
+                    style: TextStyle(
+                      fontSize: AppTypography.sm,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1B4332),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
+                    children: highlight.snapshot
+                        .map((fact) => _SnapshotFactChip(fact: fact))
+                        .toList(),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: highlight.effort.accent.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                border: Border.all(
+                  color: highlight.effort.accent.withValues(alpha: 0.22),
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: highlight.effort.accent.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Icon(
+                      highlight.effort.icon,
+                      size: 18,
+                      color: highlight.effort.accent,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${highlight.effort.label} mock outing',
+                          style: const TextStyle(
+                            fontSize: AppTypography.sm,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF16332B),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _effortGuidance(highlight.effort),
+                          style: const TextStyle(
+                            fontSize: AppTypography.sm,
+                            color: Color(0xFF52606D),
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            const Text(
+              'Mock route flow',
+              style: TextStyle(
+                fontSize: AppTypography.md,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF16332B),
+                letterSpacing: -0.3,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            ...highlight.stops.asMap().entries.map(
+              (entry) => Padding(
+                padding: EdgeInsets.only(
+                  bottom: entry.key == highlight.stops.length - 1
+                      ? 0
+                      : AppSpacing.sm,
+                ),
+                child: _StopTile(
+                  stop: entry.value,
+                  isLast: entry.key == highlight.stops.length - 1,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -347,6 +407,63 @@ class _SnapshotFactChip extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PlaceFact extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _PlaceFact({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minWidth: 132, maxWidth: 154),
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.85)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16, color: const Color(0xFF335C4A)),
+          const SizedBox(width: AppSpacing.xs + 2),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: AppTypography.xs,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF6B7A77),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: AppTypography.xs + 1,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF16332B),
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -37,6 +37,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       bestFor: 'Ridges + fjord views',
       whyItWorks:
           'It turns the map into a clear weekend idea instead of a blank northern expanse. You instantly get a place, a mood, and a route rhythm.',
+      regionLabel: 'Lyngen, Troms',
+      terrainLabel: 'Jagged ridges + fjord walls',
+      seasonLabel: 'Late summer to early autumn',
+      momentLabel: 'Arctic light with proper summit drama',
       icon: Icons.landscape_rounded,
       center: LatLng(69.55, 19.75),
       zoom: 8.2,
@@ -102,6 +106,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       bestFor: 'Cabins + alpine calm',
       whyItWorks:
           'This gives first-time explorers an understandable shape: start, sleep, move, repeat. The mountains feel approachable instead of overwhelming.',
+      regionLabel: 'Jotunheimen high country',
+      terrainLabel: 'Lakes, plateaus, and cabin corridors',
+      seasonLabel: 'Mid-summer through early autumn',
+      momentLabel: 'A calm alpine reset with cozy hut rhythm',
       icon: Icons.cottage_rounded,
       center: LatLng(61.55, 8.45),
       zoom: 8.0,
@@ -176,6 +184,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       bestFor: 'Sea cliffs + payoff',
       whyItWorks:
           'It adds instant delight. One click and the app suggests a punchy coastal adventure that feels specific, cinematic, and easy to imagine.',
+      regionLabel: 'Lofoten outer coast',
+      terrainLabel: 'Beach approach + steep sea-facing ridge',
+      seasonLabel: 'Spring to crisp autumn days',
+      momentLabel: 'Fast payoff with ocean spray and big views',
       icon: Icons.wb_sunny_outlined,
       center: LatLng(68.23, 13.61),
       zoom: 9.0,

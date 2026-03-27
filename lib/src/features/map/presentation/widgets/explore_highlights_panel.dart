@@ -90,6 +90,10 @@ class ExploreHighlight {
   final String duration;
   final String bestFor;
   final String whyItWorks;
+  final String regionLabel;
+  final String terrainLabel;
+  final String seasonLabel;
+  final String momentLabel;
   final IconData icon;
   final LatLng center;
   final double zoom;
@@ -108,6 +112,10 @@ class ExploreHighlight {
     required this.duration,
     required this.bestFor,
     required this.whyItWorks,
+    required this.regionLabel,
+    required this.terrainLabel,
+    required this.seasonLabel,
+    required this.momentLabel,
     required this.icon,
     required this.center,
     required this.zoom,
@@ -580,15 +588,35 @@ class _HighlightCard extends StatelessWidget {
                   runSpacing: AppSpacing.xs,
                   children: [
                     _CardMetaChip(label: highlight.detail),
+                    _CardMetaChip(
+                      icon: Icons.place_rounded,
+                      label: highlight.regionLabel,
+                    ),
+                    _CardMetaChip(
+                      icon: Icons.terrain_rounded,
+                      label: highlight.terrainLabel,
+                    ),
                     _CardMetaChip(label: highlight.effort.label),
-                    ...highlight.snapshot
-                        .take(2)
-                        .map(
-                          (fact) => _CardMetaChip(
-                            icon: fact.icon,
-                            label: '${fact.label}: ${fact.value}',
-                          ),
-                        ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _SceneCue(
+                        icon: Icons.wb_sunny_outlined,
+                        label: 'Best in',
+                        value: highlight.seasonLabel,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: _SceneCue(
+                        icon: Icons.auto_awesome_rounded,
+                        label: 'Feels like',
+                        value: highlight.momentLabel,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -655,6 +683,62 @@ class _CardMetaChip extends StatelessWidget {
               fontSize: AppTypography.xs + 1,
               color: Colors.white.withValues(alpha: 0.95),
               fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SceneCue extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _SceneCue({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16, color: Colors.white.withValues(alpha: 0.92)),
+          const SizedBox(width: AppSpacing.xs + 2),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: AppTypography.xs,
+                    color: Colors.white.withValues(alpha: 0.75),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: AppTypography.xs + 1,
+                    color: Colors.white.withValues(alpha: 0.95),
+                    fontWeight: FontWeight.w700,
+                    height: 1.25,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

@@ -16,6 +16,10 @@ void main() {
       duration: 'Half day',
       bestFor: 'Views',
       whyItWorks: 'Makes exploring feel easier to imagine.',
+      regionLabel: 'Mock fjord region',
+      terrainLabel: 'Fjord ridge',
+      seasonLabel: 'Late summer',
+      momentLabel: 'Golden-hour coastal drama',
       icon: Icons.landscape_rounded,
       center: LatLng(61.0, 7.0),
       zoom: 8,
@@ -61,6 +65,9 @@ void main() {
       ),
     );
 
+    expect(find.text('Sense of place'), findsOneWidget);
+    expect(find.text('Mock fjord region'), findsOneWidget);
+    expect(find.text('Late summer'), findsOneWidget);
     expect(find.text('Quick read'), findsOneWidget);
     expect(find.text('Terrain: Fjord ridge'), findsOneWidget);
     expect(find.text('Light: Evening glow'), findsOneWidget);
