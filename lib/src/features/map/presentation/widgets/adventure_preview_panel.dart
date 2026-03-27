@@ -101,6 +101,11 @@ class AdventurePreviewPanel extends StatelessWidget {
                 label: highlight.duration,
               ),
               _StatChip(icon: Icons.park_rounded, label: highlight.bestFor),
+              _StatChip(
+                icon: highlight.effort.icon,
+                label: highlight.effort.label,
+                accent: highlight.effort.accent,
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
@@ -135,6 +140,61 @@ class AdventurePreviewPanel extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              color: highlight.effort.accent.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              border: Border.all(
+                color: highlight.effort.accent.withValues(alpha: 0.22),
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: highlight.effort.accent.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Icon(
+                    highlight.effort.icon,
+                    size: 18,
+                    color: highlight.effort.accent,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${highlight.effort.label} mock outing',
+                        style: const TextStyle(
+                          fontSize: AppTypography.sm,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF16332B),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _effortGuidance(highlight.effort),
+                        style: const TextStyle(
+                          fontSize: AppTypography.sm,
+                          color: Color(0xFF52606D),
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
           const Text(
             'Mock route flow',
             style: TextStyle(
@@ -162,35 +222,54 @@ class AdventurePreviewPanel extends StatelessWidget {
       ),
     );
   }
+
+  String _effortGuidance(ExploreEffort effort) {
+    switch (effort) {
+      case ExploreEffort.all:
+        return 'A mix of mock adventure intensities across the map.';
+      case ExploreEffort.easy:
+        return 'Good for quick inspiration, lower planning friction, and scenic payoff without turning the day into a mission.';
+      case ExploreEffort.moderate:
+        return 'A balanced mock plan with a bit more movement, enough texture to feel adventurous, and still easy to imagine fitting into a normal trip.';
+      case ExploreEffort.bigDay:
+        return 'More commitment, more mountain drama, and the kind of mock outing you open when you want the destination to feel like a proper objective.';
+    }
+  }
 }
 
 class _StatChip extends StatelessWidget {
   final IconData icon;
   final String label;
+  final Color? accent;
 
-  const _StatChip({required this.icon, required this.label});
+  const _StatChip({required this.icon, required this.label, this.accent});
 
   @override
   Widget build(BuildContext context) {
+    final background = accent == null
+        ? const Color(0xFFEEF4F0)
+        : accent!.withValues(alpha: 0.1);
+    final foreground = accent ?? const Color(0xFF1B4332);
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.sm + 2,
         vertical: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFEEF4F0),
+        color: background,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF1B4332)),
+          Icon(icon, size: 16, color: foreground),
           const SizedBox(width: AppSpacing.xs + 2),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: AppTypography.xs + 1,
-              color: Color(0xFF24453A),
+              color: foreground,
               fontWeight: FontWeight.w600,
             ),
           ),

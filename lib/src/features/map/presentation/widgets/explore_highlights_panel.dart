@@ -37,6 +37,51 @@ enum ExploreVibe {
   final IconData icon;
 }
 
+enum ExploreEffort {
+  all(
+    label: 'All efforts',
+    shortLabel: 'All',
+    description: 'Mix easy wins with bigger mock mountain days.',
+    icon: Icons.tune_rounded,
+    accent: Color(0xFF335C4A),
+  ),
+  easy(
+    label: 'Easy start',
+    shortLabel: 'Easy',
+    description: 'Short, scenic mock adventures with low friction.',
+    icon: Icons.spa_rounded,
+    accent: Color(0xFF4F772D),
+  ),
+  moderate(
+    label: 'Moderate',
+    shortLabel: 'Moderate',
+    description: 'Balanced mock days with a bit more movement and payoff.',
+    icon: Icons.hiking_rounded,
+    accent: Color(0xFF2A6F97),
+  ),
+  bigDay(
+    label: 'Big day',
+    shortLabel: 'Big day',
+    description: 'Bigger mock outings with more commitment and drama.',
+    icon: Icons.terrain_rounded,
+    accent: Color(0xFF9C6644),
+  );
+
+  const ExploreEffort({
+    required this.label,
+    required this.shortLabel,
+    required this.description,
+    required this.icon,
+    required this.accent,
+  });
+
+  final String label;
+  final String shortLabel;
+  final String description;
+  final IconData icon;
+  final Color accent;
+}
+
 class ExploreHighlight {
   final String title;
   final String subtitle;
@@ -52,6 +97,7 @@ class ExploreHighlight {
   final List<LatLng> route;
   final List<ExploreStop> stops;
   final ExploreVibe vibe;
+  final ExploreEffort effort;
 
   const ExploreHighlight({
     required this.title,
@@ -68,6 +114,7 @@ class ExploreHighlight {
     required this.route,
     required this.stops,
     required this.vibe,
+    required this.effort,
   });
 }
 
@@ -92,6 +139,8 @@ class ExploreHighlightsPanel extends StatelessWidget {
   final ValueChanged<ExploreHighlight> onSelected;
   final ExploreVibe selectedVibe;
   final ValueChanged<ExploreVibe> onVibeSelected;
+  final ExploreEffort selectedEffort;
+  final ValueChanged<ExploreEffort> onEffortSelected;
 
   const ExploreHighlightsPanel({
     super.key,
@@ -99,15 +148,20 @@ class ExploreHighlightsPanel extends StatelessWidget {
     required this.onSelected,
     required this.selectedVibe,
     required this.onVibeSelected,
+    required this.selectedEffort,
+    required this.onEffortSelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    final visibleHighlights = selectedVibe == ExploreVibe.all
-        ? highlights
-        : highlights
-              .where((highlight) => highlight.vibe == selectedVibe)
-              .toList();
+    final visibleHighlights = highlights.where((highlight) {
+      final matchesVibe =
+          selectedVibe == ExploreVibe.all || highlight.vibe == selectedVibe;
+      final matchesEffort =
+          selectedEffort == ExploreEffort.all ||
+          highlight.effort == selectedEffort;
+      return matchesVibe && matchesEffort;
+    }).toList();
 
     return Container(
       width: 340,
@@ -169,68 +223,143 @@ class ExploreHighlightsPanel extends StatelessWidget {
                 .toList(),
           ),
           const SizedBox(height: AppSpacing.sm),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.sm + 2),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF4F8F5),
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(color: const Color(0xFFDDE7E1)),
+          _FilterSummaryCard(
+            icon: selectedVibe.icon,
+            title: selectedVibe == ExploreVibe.all
+                ? 'Open the whole map'
+                : '${selectedVibe.label} mode',
+            description: selectedVibe.description,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          const Text(
+            'Choose your effort',
+            style: TextStyle(
+              fontSize: AppTypography.sm,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF24453A),
             ),
-            child: Row(
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: ExploreEffort.values
+                .map(
+                  (effort) => _EffortChip(
+                    effort: effort,
+                    isSelected: effort == selectedEffort,
+                    onTap: () => onEffortSelected(effort),
+                  ),
+                )
+                .toList(),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          _FilterSummaryCard(
+            icon: selectedEffort.icon,
+            title: selectedEffort.label,
+            description: selectedEffort.description,
+            iconBackground: selectedEffort.accent.withValues(alpha: 0.12),
+            iconColor: selectedEffort.accent,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          if (visibleHighlights.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF7F9F8),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                border: Border.all(color: const Color(0xFFDDE7E1)),
+              ),
+              child: const Text(
+                'No mock adventures match that combo yet. Try a different vibe or effort level.',
+                style: TextStyle(
+                  fontSize: AppTypography.sm,
+                  color: Color(0xFF52606D),
+                  height: 1.4,
+                ),
+              ),
+            )
+          else
+            ...visibleHighlights.map(
+              (highlight) => Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: _HighlightCard(
+                  highlight: highlight,
+                  onTap: () => onSelected(highlight),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterSummaryCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String description;
+  final Color? iconBackground;
+  final Color? iconColor;
+
+  const _FilterSummaryCard({
+    required this.icon,
+    required this.title,
+    required this.description,
+    this.iconBackground,
+    this.iconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.sm + 2),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF4F8F5),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: const Color(0xFFDDE7E1)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: iconBackground ?? const Color(0xFFE2EFE8),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Icon(
+              icon,
+              color: iconColor ?? const Color(0xFF1B4332),
+              size: 18,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE2EFE8),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Icon(
-                    selectedVibe.icon,
-                    color: const Color(0xFF1B4332),
-                    size: 18,
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: AppTypography.sm,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1B4332),
                   ),
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        selectedVibe == ExploreVibe.all
-                            ? 'Open the whole map'
-                            : '${selectedVibe.label} mode',
-                        style: const TextStyle(
-                          fontSize: AppTypography.sm,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF1B4332),
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        selectedVibe.description,
-                        style: const TextStyle(
-                          fontSize: AppTypography.xs + 1,
-                          color: Color(0xFF52606D),
-                          height: 1.35,
-                        ),
-                      ),
-                    ],
+                const SizedBox(height: 2),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: AppTypography.xs + 1,
+                    color: Color(0xFF52606D),
+                    height: 1.35,
                   ),
                 ),
               ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          ...visibleHighlights.map(
-            (highlight) => Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: _HighlightCard(
-                highlight: highlight,
-                onTap: () => onSelected(highlight),
-              ),
             ),
           ),
         ],
@@ -288,6 +417,61 @@ class _VibeChip extends StatelessWidget {
                   fontSize: AppTypography.xs + 1,
                   fontWeight: FontWeight.w700,
                   color: isSelected ? Colors.white : const Color(0xFF335C4A),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EffortChip extends StatelessWidget {
+  final ExploreEffort effort;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _EffortChip({
+    required this.effort,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onTap,
+        child: Ink(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm + 2,
+            vertical: AppSpacing.sm,
+          ),
+          decoration: BoxDecoration(
+            color: isSelected ? effort.accent : const Color(0xFFF7F9F8),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: isSelected ? effort.accent : const Color(0xFFD6E5DC),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                effort.icon,
+                size: 16,
+                color: isSelected ? Colors.white : effort.accent,
+              ),
+              const SizedBox(width: AppSpacing.xs + 2),
+              Text(
+                effort.shortLabel,
+                style: TextStyle(
+                  fontSize: AppTypography.xs + 1,
+                  fontWeight: FontWeight.w700,
+                  color: isSelected ? Colors.white : effort.accent,
                 ),
               ),
             ],
@@ -377,13 +561,13 @@ class _HighlightCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                Text(
-                  highlight.detail,
-                  style: TextStyle(
-                    fontSize: AppTypography.xs + 1,
-                    color: Colors.white.withValues(alpha: 0.88),
-                    fontWeight: FontWeight.w500,
-                  ),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.xs,
+                  children: [
+                    _CardMetaChip(label: highlight.detail),
+                    _CardMetaChip(label: highlight.effort.label),
+                  ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Row(
@@ -413,6 +597,34 @@ class _HighlightCard extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CardMetaChip extends StatelessWidget {
+  final String label;
+
+  const _CardMetaChip({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: AppTypography.xs + 1,
+          color: Colors.white.withValues(alpha: 0.95),
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

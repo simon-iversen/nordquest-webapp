@@ -24,6 +24,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   Offset? _popupOffset;
   ExploreHighlight? _selectedHighlight;
   ExploreVibe _selectedVibe = ExploreVibe.all;
+  ExploreEffort _selectedEffort = ExploreEffort.all;
 
   static const List<ExploreHighlight> _highlights = [
     ExploreHighlight(
@@ -41,6 +42,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       zoom: 8.2,
       gradient: [Color(0xFF214E57), Color(0xFF3F7D6A)],
       vibe: ExploreVibe.ridges,
+      effort: ExploreEffort.bigDay,
       route: [
         LatLng(69.574, 19.764),
         LatLng(69.618, 19.812),
@@ -88,6 +90,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       zoom: 8.0,
       gradient: [Color(0xFF5B7C3F), Color(0xFF8AB17D)],
       vibe: ExploreVibe.cabins,
+      effort: ExploreEffort.moderate,
       route: [
         LatLng(61.499, 8.394),
         LatLng(61.546, 8.431),
@@ -144,6 +147,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       zoom: 9.0,
       gradient: [Color(0xFF355070), Color(0xFF6D597A)],
       vibe: ExploreVibe.coast,
+      effort: ExploreEffort.easy,
       route: [
         LatLng(68.214, 13.584),
         LatLng(68.236, 13.613),
@@ -302,12 +306,23 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           child: ExploreHighlightsPanel(
             highlights: _highlights,
             selectedVibe: _selectedVibe,
+            selectedEffort: _selectedEffort,
             onVibeSelected: (vibe) {
               setState(() {
                 _selectedVibe = vibe;
                 if (_selectedHighlight != null &&
                     vibe != ExploreVibe.all &&
                     _selectedHighlight!.vibe != vibe) {
+                  _selectedHighlight = null;
+                }
+              });
+            },
+            onEffortSelected: (effort) {
+              setState(() {
+                _selectedEffort = effort;
+                if (_selectedHighlight != null &&
+                    effort != ExploreEffort.all &&
+                    _selectedHighlight!.effort != effort) {
                   _selectedHighlight = null;
                 }
               });
@@ -319,6 +334,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 _popupOffset = null;
                 _selectedHighlight = highlight;
                 _selectedVibe = highlight.vibe;
+                _selectedEffort = highlight.effort;
               });
             },
           ),
