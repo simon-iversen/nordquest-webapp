@@ -144,6 +144,37 @@ class AdventurePreviewPanel extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
+              color: const Color(0xFFF7FAF8),
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              border: Border.all(color: const Color(0xFFDDE7E1)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Quick read',
+                  style: TextStyle(
+                    fontSize: AppTypography.sm,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1B4332),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: highlight.snapshot
+                      .map((fact) => _SnapshotFactChip(fact: fact))
+                      .toList(),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
               color: highlight.effort.accent.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(AppRadius.lg),
               border: Border.all(
@@ -274,6 +305,48 @@ class _StatChip extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SnapshotFactChip extends StatelessWidget {
+  final ExploreSnapshotFact fact;
+
+  const _SnapshotFactChip({required this.fact});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm + 2,
+        vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: const Color(0xFFDCE7E0)),
+      ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 220),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(fact.icon, size: 16, color: const Color(0xFF335C4A)),
+            const SizedBox(width: AppSpacing.xs + 2),
+            Flexible(
+              child: Text(
+                '${fact.label}: ${fact.value}',
+                softWrap: true,
+                style: const TextStyle(
+                  fontSize: AppTypography.xs + 1,
+                  color: Color(0xFF335C4A),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

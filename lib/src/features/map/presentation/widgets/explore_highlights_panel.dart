@@ -96,6 +96,7 @@ class ExploreHighlight {
   final List<Color> gradient;
   final List<LatLng> route;
   final List<ExploreStop> stops;
+  final List<ExploreSnapshotFact> snapshot;
   final ExploreVibe vibe;
   final ExploreEffort effort;
 
@@ -113,8 +114,21 @@ class ExploreHighlight {
     required this.gradient,
     required this.route,
     required this.stops,
+    required this.snapshot,
     required this.vibe,
     required this.effort,
+  });
+}
+
+class ExploreSnapshotFact {
+  final String label;
+  final String value;
+  final IconData icon;
+
+  const ExploreSnapshotFact({
+    required this.label,
+    required this.value,
+    required this.icon,
   });
 }
 
@@ -567,6 +581,14 @@ class _HighlightCard extends StatelessWidget {
                   children: [
                     _CardMetaChip(label: highlight.detail),
                     _CardMetaChip(label: highlight.effort.label),
+                    ...highlight.snapshot
+                        .take(2)
+                        .map(
+                          (fact) => _CardMetaChip(
+                            icon: fact.icon,
+                            label: '${fact.label}: ${fact.value}',
+                          ),
+                        ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -605,8 +627,9 @@ class _HighlightCard extends StatelessWidget {
 
 class _CardMetaChip extends StatelessWidget {
   final String label;
+  final IconData? icon;
 
-  const _CardMetaChip({required this.label});
+  const _CardMetaChip({required this.label, this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -619,13 +642,22 @@ class _CardMetaChip extends StatelessWidget {
         color: Colors.white.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(999),
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: AppTypography.xs + 1,
-          color: Colors.white.withValues(alpha: 0.95),
-          fontWeight: FontWeight.w600,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 14, color: Colors.white.withValues(alpha: 0.92)),
+            const SizedBox(width: AppSpacing.xs),
+          ],
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: AppTypography.xs + 1,
+              color: Colors.white.withValues(alpha: 0.95),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -74,6 +74,23 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           location: LatLng(69.661, 19.928),
         ),
       ],
+      snapshot: [
+        ExploreSnapshotFact(
+          label: 'Terrain',
+          value: 'Alpine ridgeline',
+          icon: Icons.terrain_rounded,
+        ),
+        ExploreSnapshotFact(
+          label: 'Light',
+          value: 'Late Arctic glow',
+          icon: Icons.wb_twilight_rounded,
+        ),
+        ExploreSnapshotFact(
+          label: 'Flow',
+          value: 'Basecamp + summit push',
+          icon: Icons.route_rounded,
+        ),
+      ],
     ),
     ExploreHighlight(
       title: 'Jotunheimen cabin loop',
@@ -131,6 +148,23 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           location: LatLng(61.622, 8.582),
         ),
       ],
+      snapshot: [
+        ExploreSnapshotFact(
+          label: 'Terrain',
+          value: 'Lake + plateau',
+          icon: Icons.landscape_rounded,
+        ),
+        ExploreSnapshotFact(
+          label: 'Pace',
+          value: 'Hut-to-hut steady',
+          icon: Icons.cabin_rounded,
+        ),
+        ExploreSnapshotFact(
+          label: 'Mood',
+          value: 'Calm alpine reset',
+          icon: Icons.self_improvement_rounded,
+        ),
+      ],
     ),
     ExploreHighlight(
       title: 'Lofoten sea-to-summit',
@@ -177,6 +211,23 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           icon: Icons.visibility_rounded,
           markerColor: Color(0xFF9C6644),
           location: LatLng(68.252, 13.655),
+        ),
+      ],
+      snapshot: [
+        ExploreSnapshotFact(
+          label: 'Terrain',
+          value: 'Beach to peak',
+          icon: Icons.waves_rounded,
+        ),
+        ExploreSnapshotFact(
+          label: 'Payoff',
+          value: 'Big photos fast',
+          icon: Icons.photo_camera_back_rounded,
+        ),
+        ExploreSnapshotFact(
+          label: 'Feel',
+          value: 'Punchy half-day',
+          icon: Icons.flash_on_rounded,
         ),
       ],
     ),
